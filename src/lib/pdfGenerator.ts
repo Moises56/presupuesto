@@ -51,11 +51,11 @@ export async function generarPresupuestoPDF(
 
   y = height - 140;
 
-  // Fecha
-  const fechaActual = new Date().toLocaleDateString('es-HN');
+  // Fecha (usar fecha desencriptada de Fecha_Grabo)
+  const fechaGrabo = decryptDate(data.Fecha_Grabo);
   page.drawText('Fecha', { x: margenIzq, y, size: 10, font: helvetica });
   page.drawText(':', { x: margenIzq + 50, y, size: 10, font: helvetica });
-  page.drawText(fechaActual, { x: margenIzq + 70, y, size: 10, font: helvetica });
+  page.drawText(fechaGrabo, { x: margenIzq + 70, y, size: 10, font: helvetica });
 
   y -= 25;
 
@@ -316,8 +316,7 @@ export async function generarPresupuestoPDF(
   y -= 35;
 
   // Pie de página
-  const fechaGrabo = decryptDate(data.Fecha_Grabo);
-  const horaGrabo = decryptTime(data.Hora_Grabo);
+  const horaGrabo = decryptTime();
 
   page.drawText(`Elaborado Por   ${data.Usuario_Grabo.trim()}`, { x: margenIzq, y, size: 10, font: helvetica });
   page.drawText(`Fecha    ${fechaGrabo}`, { x: width / 2 - 50, y, size: 10, font: helvetica });

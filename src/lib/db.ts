@@ -124,11 +124,14 @@ export function decryptDate(encrypted: Buffer | string): string {
   if (Buffer.isBuffer(encrypted)) {
     const bytes = encrypted;
     if (bytes.length >= 4) {
-      const day = bytes[0] ^ 0xC3;
-      const month = bytes[1] ^ 0x49;
-      const yearHigh = bytes[2] ^ 0x60;
-      const yearLow = bytes[3] ^ 0x24;
-      const year = (yearHigh << 8) | yearLow;
+      // Formato Magic eDeveloper:
+      // Byte 0: Marcador fijo (0xC3)
+      // Byte 1: Año - 2000 + 47
+      // Byte 2: Mes + 95
+      // Byte 3: Día + 16
+      const year = 2000 + (bytes[1] - 47);
+      const month = bytes[2] - 95;
+      const day = bytes[3] - 16;
       
       if (day >= 1 && day <= 31 && month >= 1 && month <= 12 && year >= 2000 && year <= 2100) {
         return `${day.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}/${year}`;
@@ -139,21 +142,11 @@ export function decryptDate(encrypted: Buffer | string): string {
   return new Date().toLocaleDateString('es-HN');
 }
 
-export function decryptTime(encrypted: Buffer | string): string {
-  if (!encrypted) return new Date().toLocaleTimeString('es-HN');
-  
-  if (Buffer.isBuffer(encrypted)) {
-    const bytes = encrypted;
-    if (bytes.length >= 4) {
-      const hours = bytes[0] ^ 0xC3;
-      const minutes = bytes[1] ^ 0x03;
-      const seconds = bytes[2] ^ 0x3E;
-      
-      if (hours >= 0 && hours <= 23 && minutes >= 0 && minutes <= 59 && seconds >= 0 && seconds <= 59) {
-        return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-      }
-    }
-  }
-  
-  return new Date().toLocaleTimeString('es-HN');
+export function decryptTime(): string {
+  // El usuario indicó usar la hora actual de impresión
+  const now = new Date();
+  const hours = now.getHours();
+  const minutes = now.getMinutes();
+  const seconds = now.getSeconds();
+  return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 }

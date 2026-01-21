@@ -1,9 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getPartida } from '@/lib/db';
 import { generarPresupuestoPDF } from '@/lib/pdfGenerator';
+import { auth } from '@/auth';
+import { registrarBitacora } from '@/lib/authDb';
 
 export async function POST(request: NextRequest) {
   try {
+    const session = await auth();
+    
+    if (!session?.user) {
+      return NextResponse.json(
+        { error: 'No autorizado' },
+        { status: 401 }
+      );
+    }
+
     const body = await request.json();
     const { anio, noPartida } = body;
 
@@ -14,6 +25,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const userId = parseInt(session.user.id);
+    const username = session.user.username;
+    const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
+    const userAgent = request.headers.get('user-agent') || 'unknown';
+
+    // Registrar búsqueda en bitácora
+    await registrarBitacora(
+      userId,
+      username,
+      'BUSCAR_PARTIDA',
+      `Año: ${anio}, Partida: ${noPartida}`,
+      ip,
+      userAgent.substring(0, 255)
+    );
+
     const partida = await getPartida(parseInt(anio), parseInt(noPartida));
 
     if (!partida) {
@@ -22,6 +48,16 @@ export async function POST(request: NextRequest) {
         { status: 404 }
       );
     }
+
+    // Registrar generación de PDF en bitácora
+    await registrarBitacora(
+      userId,
+      username,
+      'GENERAR_PDF',
+      `Año: ${anio}, Partida: ${noPartida}, No_Pda_New: ${partida.No_Pda_New}`,
+      ip,
+      userAgent.substring(0, 255)
+    );
 
     const pdfBuffer = await generarPresupuestoPDF(partida, parseInt(anio));
 

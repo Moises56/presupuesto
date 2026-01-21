@@ -14,10 +14,12 @@ const config: sql.config = {
 let pool: sql.ConnectionPool | null = null;
 
 export async function getConnection(): Promise<sql.ConnectionPool> {
-  if (pool) {
+  if (pool && pool.connected) {
     return pool;
   }
-  pool = await sql.connect(config);
+  // Usar ConnectionPool específico para evitar conflicto con otras conexiones
+  pool = new sql.ConnectionPool(config);
+  await pool.connect();
   return pool;
 }
 

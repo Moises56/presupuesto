@@ -101,7 +101,7 @@ export async function getPartida(anio: number, noPartida: number): Promise<Parti
     INNER JOIN Actividades_2018 A ON A.Codigo_de_Actividad = P.Codigo_de_Actividad
     INNER JOIN Estructura_2018 E ON E.Codigo_de_Estructura = P.Codigo_de_Estructura
     INNER JOIN Objetos_de_Gasto_2010 O ON (O.Grupo = P.Grupo AND O.Sub_Grupo = P.Sub_Grupo AND O.Objeto = P.Objeto)
-    INNER JOIN Cargos_2018 C ON C.Codigo = P.Codigo_del_Cargo
+    LEFT JOIN Cargos_2018 C ON C.Codigo = P.Codigo_del_Cargo
     INNER JOIN Organismo OG ON OG.Codigo_Organismo = P.Codigo_Organismo
     INNER JOIN Convenios CV ON CV.Codigo_Convenio = P.Codigo_Convenio
     INNER JOIN Fondos_2018 F ON F.FONDO = P.FONDO

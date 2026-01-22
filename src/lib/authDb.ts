@@ -58,9 +58,13 @@ export async function findUserByUsernameOrEmail(identifier: string): Promise<Usu
 export async function updateLastAccess(userId: number): Promise<void> {
   const pool = await getAuthConnection();
   
+  // Fecha/hora local de Honduras (UTC-6)
+  const fechaHoraLocal = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Tegucigalpa' }));
+  
   await pool.request()
     .input('userId', sql.Int, userId)
-    .query('UPDATE Usuarios SET UltimoAcceso = GETDATE() WHERE Id = @userId');
+    .input('fechaHora', sql.DateTime, fechaHoraLocal)
+    .query('UPDATE Usuarios SET UltimoAcceso = @fechaHora WHERE Id = @userId');
 }
 
 export async function registrarBitacora(
@@ -73,6 +77,9 @@ export async function registrarBitacora(
 ): Promise<void> {
   const pool = await getAuthConnection();
   
+  // Fecha/hora local de Honduras (UTC-6)
+  const fechaHoraLocal = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Tegucigalpa' }));
+  
   await pool.request()
     .input('usuarioId', sql.Int, usuarioId)
     .input('username', sql.NVarChar, username)
@@ -80,9 +87,10 @@ export async function registrarBitacora(
     .input('detalle', sql.NVarChar, detalle || null)
     .input('ipAddress', sql.NVarChar, ipAddress || null)
     .input('userAgent', sql.NVarChar, userAgent || null)
+    .input('fechaHora', sql.DateTime, fechaHoraLocal)
     .query(`
-      INSERT INTO Bitacora (UsuarioId, Username, Accion, Detalle, IpAddress, UserAgent)
-      VALUES (@usuarioId, @username, @accion, @detalle, @ipAddress, @userAgent)
+      INSERT INTO Bitacora (UsuarioId, Username, Accion, Detalle, IpAddress, UserAgent, FechaHora)
+      VALUES (@usuarioId, @username, @accion, @detalle, @ipAddress, @userAgent, @fechaHora)
     `);
 }
 

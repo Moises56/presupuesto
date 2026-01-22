@@ -62,9 +62,9 @@ export async function generarPresupuestoPDF(
   // Para
   page.drawText('Para', { x: margenIzq, y, size: 10, font: helvetica });
   page.drawText(':', { x: margenIzq + 50, y, size: 10, font: helvetica });
-  page.drawText(data.Nombres_Gerente.trim(), { x: margenIzq + 70, y, size: 10, font: helvetica });
+  page.drawText((data.Nombres_Gerente || '').trim(), { x: margenIzq + 70, y, size: 10, font: helvetica });
   y -= 15;
-  page.drawText(data.Nombres_Cargo.trim(), { x: margenIzq + 70, y, size: 10, font: helvetica });
+  page.drawText((data.Nombres_Cargo || '').trim(), { x: margenIzq + 70, y, size: 10, font: helvetica });
 
   y -= 25;
 
@@ -77,7 +77,7 @@ export async function generarPresupuestoPDF(
 
   // Proveedor
   page.drawText('Proveedor:', { x: margenIzq, y, size: 10, font: helvetica });
-  page.drawText(data.PROVEEDOR.trim(), { x: margenIzq + 60, y, size: 10, font: helvetica });
+  page.drawText((data.PROVEEDOR || '').trim(), { x: margenIzq + 60, y, size: 10, font: helvetica });
 
   y -= 25;
 
@@ -140,7 +140,7 @@ export async function generarPresupuestoPDF(
     return lines;
   };
 
-  const descripcion = data.Descripcion.trim();
+  const descripcion = (data.Descripcion || '').trim();
   const lineasJustificadas = justifyText(descripcion, tableWidth, 9);
   
   lineasJustificadas.slice(0, 4).forEach((palabras, index) => {
@@ -180,9 +180,9 @@ export async function generarPresupuestoPDF(
   const progColWidths = [50, 460];
   
   const programaData = [
-    { codigo: padCode(data.Codigo_de_Programa, 2), nombre: data.Nombre_del_Programa.trim() },
-    { codigo: padCode(data.Codigo_de_Actividad, 3), nombre: data.Nombre_del_Actividad.trim() },
-    { codigo: padCode(data.Codigo_de_Estructura, 3), nombre: data.Nombre_del_Estructura.trim() }
+    { codigo: padCode(data.Codigo_de_Programa, 2), nombre: (data.Nombre_del_Programa || '').trim() },
+    { codigo: padCode(data.Codigo_de_Actividad, 3), nombre: (data.Nombre_del_Actividad || '').trim() },
+    { codigo: padCode(data.Codigo_de_Estructura, 3), nombre: (data.Nombre_del_Estructura || '').trim() }
   ];
 
   programaData.forEach((item) => {
@@ -212,8 +212,8 @@ export async function generarPresupuestoPDF(
   const centroColWidths = [50, 460];
   
   const centroData = [
-    { codigo: String(data.Codigo_Centro_de_Costo), nombre: data.Nombre_Centro_de_Costo.trim() },
-    { codigo: padCode(data.Codigo_de_Depto, 2), nombre: data.Nombre_de_Depto.trim() }
+    { codigo: String(data.Codigo_Centro_de_Costo), nombre: (data.Nombre_Centro_de_Costo || '').trim() },
+    { codigo: padCode(data.Codigo_de_Depto, 2), nombre: (data.Nombre_de_Depto || '').trim() }
   ];
 
   centroData.forEach((item) => {
@@ -279,7 +279,7 @@ export async function generarPresupuestoPDF(
   xObj += objColWidths[2];
   
   page.drawRectangle({ x: xObj, y: y - 15, width: objColWidths[3], height: 15, borderWidth: 0.5, borderColor: rgb(0, 0, 0) });
-  page.drawText(data.Nombre_Objeto_de_Gasto.trim().substring(0, 45), { x: xObj + 10, y: y - 11, size: 9, font: helvetica });
+  page.drawText((data.Nombre_Objeto_de_Gasto || '').trim().substring(0, 45), { x: xObj + 10, y: y - 11, size: 9, font: helvetica });
   
   y -= 25;
 
@@ -293,14 +293,14 @@ export async function generarPresupuestoPDF(
   page.drawRectangle({ x: margenIzq, y: y - 15, width: orgWidth1, height: 15, borderWidth: 0.5, borderColor: rgb(0, 0, 0) });
   page.drawRectangle({ x: margenIzq + orgWidth1, y: y - 15, width: orgWidth2 + orgWidth3 + orgWidth4, height: 15, borderWidth: 0.5, borderColor: rgb(0, 0, 0) });
   page.drawText('Organismo', { x: margenIzq + 5, y: y - 11, size: 9, font: helvetica });
-  page.drawText(`${data.Codigo_Organismo} ${data.Nombres_Organismo.trim().substring(0, 40)}`, { x: margenIzq + orgWidth1 + 5, y: y - 11, size: 9, font: helvetica });
+  page.drawText(`${data.Codigo_Organismo} ${(data.Nombres_Organismo || '').trim().substring(0, 40)}`, { x: margenIzq + orgWidth1 + 5, y: y - 11, size: 9, font: helvetica });
   y -= 15;
 
   // Fila 2 - Convenio
   page.drawRectangle({ x: margenIzq, y: y - 15, width: orgWidth1, height: 15, borderWidth: 0.5, borderColor: rgb(0, 0, 0) });
   page.drawRectangle({ x: margenIzq + orgWidth1, y: y - 15, width: orgWidth2 + orgWidth3 + orgWidth4, height: 15, borderWidth: 0.5, borderColor: rgb(0, 0, 0) });
   page.drawText('Convenio', { x: margenIzq + 5, y: y - 11, size: 9, font: helvetica });
-  page.drawText(`${data.Codigo_Convenio} ${data.Nombres_Convenio.trim().substring(0, 40)}`, { x: margenIzq + orgWidth1 + 5, y: y - 11, size: 9, font: helvetica });
+  page.drawText(`${data.Codigo_Convenio} ${(data.Nombres_Convenio || '').trim().substring(0, 40)}`, { x: margenIzq + orgWidth1 + 5, y: y - 11, size: 9, font: helvetica });
   y -= 15;
 
   // Fila 3 - Fondos y Vigencia
@@ -309,16 +309,16 @@ export async function generarPresupuestoPDF(
   page.drawRectangle({ x: margenIzq + orgWidth1 + orgWidth2, y: y - 15, width: orgWidth3, height: 15, borderWidth: 0.5, borderColor: rgb(0, 0, 0) });
   page.drawRectangle({ x: margenIzq + orgWidth1 + orgWidth2 + orgWidth3, y: y - 15, width: orgWidth4, height: 15, borderWidth: 0.5, borderColor: rgb(0, 0, 0) });
   page.drawText('Fondos', { x: margenIzq + 5, y: y - 11, size: 9, font: helvetica });
-  page.drawText(`${data.Fondo} ${data.Nombres_del_Fondo.trim().substring(0, 20)}`, { x: margenIzq + orgWidth1 + 5, y: y - 11, size: 9, font: helvetica });
+  page.drawText(`${data.Fondo} ${(data.Nombres_del_Fondo || '').trim().substring(0, 20)}`, { x: margenIzq + orgWidth1 + 5, y: y - 11, size: 9, font: helvetica });
   page.drawText('Vigencia', { x: margenIzq + orgWidth1 + orgWidth2 + 5, y: y - 11, size: 9, font: helvetica });
-  page.drawText(data.Dias_Calendario.trim(), { x: margenIzq + orgWidth1 + orgWidth2 + orgWidth3 + 5, y: y - 11, size: 9, font: helvetica });
+  page.drawText((data.Dias_Calendario || '').trim(), { x: margenIzq + orgWidth1 + orgWidth2 + orgWidth3 + 5, y: y - 11, size: 9, font: helvetica });
 
   y -= 35;
 
   // Pie de página
   const horaGrabo = decryptTime();
 
-  page.drawText(`Elaborado Por   ${data.Usuario_Grabo.trim()}`, { x: margenIzq, y, size: 10, font: helvetica });
+  page.drawText(`Elaborado Por   ${(data.Usuario_Grabo || '').trim()}`, { x: margenIzq, y, size: 10, font: helvetica });
   page.drawText(`Fecha    ${fechaGrabo}`, { x: width / 2 - 50, y, size: 10, font: helvetica });
   page.drawText(`Hora       ${horaGrabo}`, { x: width - 150, y, size: 10, font: helvetica });
 
